@@ -1,31 +1,32 @@
+from neuralnet import sigmoid
 import numpy as np
 
-def numetrical_gradient(f, x):
-	h = 1e-4
+def numerical_gradient(f, x):
+	h = 1e-4 # 0.0001
 	grad = np.zeros_like(x)
 
-	for idx in range(x.size):
-		#xのidx番目で偏微分
-		tmp = x[idx]
+	for idx in range(x.shape[0]):
+		tmp_val = x[idx]
+		x[idx] = tmp_val + h
+		fxh1 = f(x) # f(x+h)
 
-		#f(x+h)の計算
-		x[idx] = tmp + h
-		fxh1 = f(x)
-		#f(x-h)の計算
-		x[idx] = tmp - h
-		fxh2 = f(x)
+		x[idx] = tmp_val - h
+		fxh2 = f(x) # f(x-h)
+		grad[idx] = (fxh1 - fxh2) / (2*h)
 
-		grad = (fxh1 - fxh2) / (2*h)
-		#xを元に戻す
-		x[idx] = tmp
+		x[idx] = tmp_val # 値を元に戻す
 
 	return grad
+
 
 def gradient_descent(f, init_x, eta=0.01, step=100):
 	x = init_x
 
 	for i in range(step):
-		grad = numetrical_gradient(f, x)
+		grad = numerical_gradient(f, x)
 		x -= eta * grad
 
 	return x
+
+def sigmoid_grad(x):
+    return (1.0 - sigmoid(x)) * sigmoid(x)
